@@ -1,0 +1,32 @@
+{
+  "name": "financialdatasets-mcp",
+  "version": "1.1.0",
+  "description": "MCP server for Financial Datasets API - access real-time and historical financial data",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "node test-real.js",
+    "test:interactive": "node test-interactive.js"
+  },
+  "keywords": [
+    "mcp",
+    "financial-data",
+    "stocks",
+    "finance",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "dotenv": "^17.0.0",
+    "typescript": "^5.3.3"
+  }
+}

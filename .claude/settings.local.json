@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(mintlify:*)",
+      "Bash(grep:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm install)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test)",
+      "Bash(cp:*)",
+      "Bash(cat:*)",
+      "Bash(npm run test:interactive:*)",
+      "Bash(rm:*)"
+    ],
+    "deny": []
+  }
+}

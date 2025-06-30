@@ -111,20 +111,53 @@ Get recent earnings press releases with full text.
 **Example**: "Show me Apple's latest earnings announcement"
 
 ### `search_companies`
-Browse major companies by market cap.
+Search for companies by financial metrics using powerful filters. You can filter by revenue, debt, cash flow, and 50+ other financial metrics.
 
-**Example**: "Show me the largest tech companies"
+**Parameters**:
+- `filters` - Array of filter objects (required). Each filter needs:
+  - `field` - Financial metric like "revenue", "total_debt", "net_income", "capital_expenditure"
+  - `operator` - Comparison operator: "eq", "gt", "gte", "lt", "lte"
+  - `value` - Numeric value to compare against
+- `period` - Time period: "annual", "quarterly", or "ttm" (default: "ttm")
+- `limit` - Number of results to return (default: 10)
+
+**Common searchable fields**:
+- Income Statement: `revenue`, `gross_profit`, `operating_income`, `net_income`, `earnings_per_share`
+- Balance Sheet: `total_assets`, `total_debt`, `cash_and_equivalents`, `shareholders_equity`
+- Cash Flow: `net_cash_flow_from_operations`, `capital_expenditure`, `free_cash_flow`
+
+**Example**: "Find companies with revenue over $1 billion and debt less than $100 million"
 
 ## Usage Examples
 
 Once configured, you can ask Claude:
 
+### Stock Prices
 - "What's the current price of AAPL?"
+- "Show me NVDA's stock price and market cap"
+
+### Financial Statements
 - "Show me Microsoft's financial statements for the last 4 quarters"
+- "Get Tesla's annual income statements"
+- "What's Apple's cash flow for the last year?"
+
+### Financial Metrics
 - "What are Tesla's profit margins?"
+- "Show me Amazon's P/E ratio and other valuation metrics"
+- "What's Microsoft's return on equity?"
+
+### Company Search
+- "Find companies with revenue over $10 billion and debt less than $1 billion"
+- "Search for profitable companies with low capital expenditure"
+- "Show me companies with positive free cash flow and growing revenue"
+
+### Institutional Ownership
 - "Who owns the most shares of Amazon?"
+- "Show me the top 10 institutional investors in Apple"
+
+### Earnings
 - "Find the latest earnings news for Google"
-- "Compare the P/E ratios of Apple and Microsoft"
+- "Show me NVDA's recent earnings announcements"
 
 ## Development
 

@@ -1,8 +1,19 @@
 # Financial Datasets Documentation
 
-# Customized MCP Server
+This repository contains the documentation for the Financial Datasets API and a custom MCP (Model Context Protocol) server.
 
-**See details in ./financialdatasets-mcp/README.md**
+## Custom MCP Server
+
+We've built a custom MCP server that allows AI assistants like Claude to access Financial Datasets API directly. The server provides tools for:
+
+- 📈 Real-time stock prices and market data
+- 💼 Financial statements (income, balance sheet, cash flow)
+- 📊 Financial metrics and ratios
+- 🔍 **Company search with 50+ financial filters** (newly added!)
+- 🏢 Institutional ownership data
+- 📰 Earnings press releases
+
+**See full details and setup instructions in [./financialdatasets-mcp/README.md](./financialdatasets-mcp/README.md)**
 
 # Mintlify Starter Kit
 

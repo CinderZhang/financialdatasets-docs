@@ -117,31 +117,46 @@ const TOOLS: Tool[] = [
   },
   {
     name: "search_companies",
-    description: "Search for companies by various financial metrics and filters",
+    description: "Search for companies by financial metrics using filters. You can filter by revenue, debt, cash flow, and 50+ other financial metrics.",
     inputSchema: {
       type: "object",
       properties: {
-        query: {
+        filters: {
+          type: "array",
+          description: "Array of filters to apply. Each filter has a field, operator (eq, gt, gte, lt, lte), and value",
+          items: {
+            type: "object",
+            properties: {
+              field: {
+                type: "string",
+                description: "Financial metric to filter by (e.g., revenue, total_debt, net_income, capital_expenditure)",
+              },
+              operator: {
+                type: "string",
+                enum: ["eq", "gt", "gte", "lt", "lte"],
+                description: "Comparison operator",
+              },
+              value: {
+                type: "number",
+                description: "Value to compare against",
+              },
+            },
+            required: ["field", "operator", "value"],
+          },
+        },
+        period: {
           type: "string",
-          description: "Search query or company name",
+          enum: ["annual", "quarterly", "ttm"],
+          description: "Time period for the data",
+          default: "ttm",
         },
-        min_market_cap: {
+        limit: {
           type: "number",
-          description: "Minimum market capitalization in millions",
-        },
-        max_market_cap: {
-          type: "number",
-          description: "Maximum market capitalization in millions",
-        },
-        min_revenue: {
-          type: "number",
-          description: "Minimum annual revenue in millions",
-        },
-        sector: {
-          type: "string",
-          description: "Industry sector",
+          description: "Maximum number of results to return",
+          default: 10,
         },
       },
+      required: ["filters"],
     },
   },
   {
@@ -321,43 +336,95 @@ Last Updated: ${new Date(price.time).toLocaleString()}`,
       }
 
       case "search_companies": {
-        // For now, return a predefined list of major companies
-        // The search endpoint seems to require different authentication
-        const majorCompanies = [
-          { ticker: "AAPL", name: "Apple Inc." },
-          { ticker: "MSFT", name: "Microsoft Corporation" },
-          { ticker: "GOOGL", name: "Alphabet Inc." },
-          { ticker: "AMZN", name: "Amazon.com Inc." },
-          { ticker: "NVDA", name: "NVIDIA Corporation" },
-          { ticker: "META", name: "Meta Platforms Inc." },
-          { ticker: "TSLA", name: "Tesla Inc." },
-          { ticker: "BRK.B", name: "Berkshire Hathaway Inc." }
-        ];
+        const { filters, period = "ttm", limit = 10 } = args as {
+          filters: Array<{ field: string; operator: string; value: number }>;
+          period?: string;
+          limit?: number;
+        };
 
-        let output = "Major companies by market cap:\n\n";
-        
-        // Get current prices for these companies
-        for (const company of majorCompanies.slice(0, 5)) {
-          try {
-            const priceData = await client.request('/prices/snapshot', { ticker: company.ticker });
-            if (priceData && priceData.snapshot) {
-              const snapshot = priceData.snapshot;
-              output += `${company.ticker} - ${company.name}\n`;
-              output += `  Price: $${snapshot.price}\n`;
-              output += `  Market Cap: $${(snapshot.market_cap / 1000000000).toFixed(2)}B\n`;
-              output += `  Day Change: ${snapshot.day_change >= 0 ? '+' : ''}${snapshot.day_change_percent}%\n\n`;
-            }
-          } catch (e) {
-            // Skip if error
-          }
+        // Validate filters
+        if (!filters || filters.length === 0) {
+          return {
+            content: [{
+              type: "text",
+              text: "Please provide at least one filter for the search",
+            }],
+          };
         }
 
-        return {
-          content: [{
-            type: "text",
-            text: output,
-          }],
+        // Prepare the request body
+        const body = {
+          period,
+          limit,
+          filters,
         };
+
+        // Make POST request to search endpoint with header authentication
+        const url = `${client.baseUrl}/financials/search`;
+        const headers = {
+          'X-API-KEY': apiKey,
+          'Content-Type': 'application/json',
+        };
+
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify(body),
+          });
+
+          if (!response.ok) {
+            const error = await response.text();
+            throw new Error(`Search API Error: ${response.status} - ${error}`);
+          }
+
+          const data = await response.json() as { search_results?: any[] };
+          
+          if (!data.search_results || data.search_results.length === 0) {
+            return {
+              content: [{
+                type: "text",
+                text: "No companies found matching your search criteria",
+              }],
+            };
+          }
+
+          let output = `Found ${data.search_results.length} companies matching your criteria:\n\n`;
+          
+          data.search_results.forEach((result: any) => {
+            output += `${result.ticker}\n`;
+            output += `  Report Period: ${result.report_period} (${result.period})\n`;
+            
+            // Display the filtered fields that were returned
+            Object.keys(result).forEach(key => {
+              if (key !== 'ticker' && key !== 'report_period' && key !== 'period' && key !== 'currency') {
+                const value = result[key];
+                // Format large numbers
+                if (typeof value === 'number' && Math.abs(value) > 1000000) {
+                  output += `  ${key}: $${(value / 1000000).toFixed(1)}M\n`;
+                } else if (typeof value === 'number') {
+                  output += `  ${key}: ${value}\n`;
+                }
+              }
+            });
+            output += '\n';
+          });
+
+          return {
+            content: [{
+              type: "text",
+              text: output,
+            }],
+          };
+        } catch (error) {
+          return {
+            content: [{
+              type: "text",
+              text: `Error searching companies: ${error instanceof Error ? error.message : String(error)}`,
+            }],
+            isError: true,
+          };
+        }
       }
 
       case "get_earnings_releases": {

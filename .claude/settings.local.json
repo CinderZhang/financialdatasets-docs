@@ -19,7 +19,11 @@
       "Bash(git commit:*)",
       "Bash(git config:*)",
       "Bash(git log:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(echo $EDITOR)",
+      "Bash(export:*)",
+      "Bash(source ~/.bashrc)",
+      "Bash(windsurf:*)"
     ],
     "deny": []
   }

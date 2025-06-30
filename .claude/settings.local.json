@@ -14,7 +14,12 @@
       "Bash(cp:*)",
       "Bash(cat:*)",
       "Bash(npm run test:interactive:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(git log:*)",
+      "Bash(git push:*)"
     ],
     "deny": []
   }
